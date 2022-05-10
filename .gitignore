@@ -1,0 +1,8 @@
+.DS_Store
+__pycache__/*
+env/*
+tmp/*
+tmp_python.py
+~*
+paper_data/*
+paper_figures/*
