@@ -1,11 +1,11 @@
 # generate_graphics.py
-# Creates figures for HR Single Cupolet Paper. Requires external DDRIVE connection.
+# Creates figures for HR Single Cupolet Paper.
 # Author: John E. Parker
 import numpy as np
 from matplotlib import pyplot as plt
 from mpl_toolkits import mplot3d
 from mpl_toolkits.mplot3d import Axes3D
-import os, sys
+import os, sys, argparse
 import matplotlib
 from scipy.signal import find_peaks
 import string
@@ -229,12 +229,12 @@ def figure6(data_direc, bins, save_direc):
     plt.close()
 
 
-def figure7(data_direc,cupolet,plot_percent,save_direc):
+def figure7(data_direc,plot_percent,save_direc):
     '''
     Figure 7
     '''
     plt.rcParams.update({'font.size': 10})
-    x,y,z = np.loadtxt(f'{data_direc}/bins_1600_rN_16/cupolets/{cupolet}/bin_ps1_1109/cupolet_time_series.txt',unpack=True,usecols=(1,2,3))
+    x,y,z = np.loadtxt(f'{data_direc}/bins_1600_rN_16/cupolets/C01011/bin_ps1_1109/cupolet_time_series.txt',unpack=True,usecols=(1,2,3))
     st = int(len(x)*(1-plot_percent)) # Only graph plot_percent of data
     x=x[st:]; y=y[st:]; z=z[st:];
 
@@ -343,6 +343,7 @@ def figure11(data_direc,save_direc,dt):
         _,ip,_ = sa.get_period(x[int(len(x)*0.25):],dt);
         t = t[-ip:]; x = x[-ip:]; y = y[-ip:]; z = z[-ip:];
         pks,_ = find_peaks(x,height=1)
+        print(cupolets[i],len(pks),len(pks)/(t[-1]-t[-ip]),ip,t[-1]-t[-ip])
         if i < len(cupolets)/2:
             ax[i,0].plot(x,y,z,linewidth=1,color="b")
             ax[i,0].set_xlabel("$x$"); ax[i,0].set_ylabel("$y$"); ax[i,0].set_zlabel("$z$"); # axes label
@@ -457,25 +458,50 @@ def epstopdf(figures,save_direc):
     for f in figures:
         os.system(f'epstopdf {save_direc}/figure_{f}.eps {save_direc}/figure_{f}.pdf')
 
-data_direc = 'paper_data'; # Directory where paper data is stored
-save_direc = 'paper_figures'; # Directory to save generated figure
-plot_percent = 0.75; plot_percent_short = 0.25;
-bins = 1600;
-dt = 1/128;
+parser = parser = argparse.ArgumentParser(description='Generates figures based on input.')
+
+parser.add_argument('-sd',nargs='?',default='paper_figures',type=str,help='Path to directory to store generated figures. Default: paper_figures')
+parser.add_argument('-d',nargs='?',default='paper_data',type=str,help='Path to directory containing data. Default: paper_data')
+
+parser.add_argument('-f',nargs='+',default=[1,2,3,4,5,6,7,8,9,10,11],type=int,help='Array of figure numbers to generate. Default: 1 2 3 4 5 6 7 8 9 10 11')
+parser.add_argument('-b',nargs='?',default=1600,type=int,help="Number of bins in data. Default: 1600")
+parser.add_argument('-dt',nargs='?',default=1/128.0,type=float,help="dt used in data. Default: 1/128")
+parser.add_argument('-pp',nargs='?',default=0.75,type=float,help="Proportion of data to plot. Default: 0.75")
+parser.add_argument('-pps',nargs='?',default=0.25,type=float,help="Proportion of data to plot, for the full chaotic attractor. Default: 0.25")
+
+args = parser.parse_args()
+
+data_direc = args.d;
+save_direc = args.sd;
+bins = args.b;
+dt = args.dt;
+plot_percent = args.pp;
+plot_percent_short = args.pps;
 
 
-figure1('tmp',save_direc)
-#figure2(data_direc, dt,plot_percent,save_direc) # Uncomment to generate figure 2
-#figure3(data_direc, dt,plot_percent_short,save_direc) # Uncomment to generate figure 3
-#figure4(data_direc,plot_percent,save_direc) # Uncomment to generate figure 4
-#figure5(data_direc,save_direc) # Uncomment to generate figure 5
-#figure6(data_direc,bins,save_direc) # Uncomment to generate figure 6
-#figure7(data_direc,"C01011", plot_percent,save_direc) # Uncomment to generate figure 8
-#figure8(data_direc,save_direc, 0.75) # Uncomment to generate figure 9
-#figure9(data_direc,save_direc,plot_percent,dt)
-#figure11(data_direc,save_direc,dt)
+for fig in args.f:
+    if fig == 1:
+        figure1(data_direc,save_direc)
+    if fig == 2:
+        figure2(data_direc, dt,plot_percent,save_direc)
+    if fig == 3:
+        figure3(data_direc, dt,plot_percent_short,save_direc)
+    if fig == 4:
+        figure4(data_direc,plot_percent,save_direc)
+    if fig == 5:
+        figure5(data_direc,save_direc)
+    if fig == 6:
+        figure6(data_direc,bins,save_direc)
+    if fig == 7:
+        figure7(data_direc, plot_percent,save_direc)
+    if fig == 8:
+        figure8(data_direc,save_direc, 0.75)
+    if fig == 9:
+        figure9(data_direc,save_direc,plot_percent,dt)
+    if fig == 10:
+        print("Fig 10 not ready.")
+        #figure10(f"{data_direc}/bins_1600_rN_16/cupolets/c11/unique",save_direc)
+    if fig == 11:
+        figure11(data_direc,save_direc,dt)
 
-#figure10(f"{data_direc}/bins_1600_rN_16/cupolets/c11/unique",save_direc)\
-
-
-epstopdf([11],save_direc) # Uncomment to generate PDF figure list from eps files,
+epstopdf(args.f,save_direc)

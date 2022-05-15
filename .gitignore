@@ -4,5 +4,8 @@ env/*
 tmp/*
 tmp_python.py
 ~*
-paper_data/*
+
+paper_data/hr_system/*txt
+paper_data/bins_1600_rN_16/cupolets/*
+
 paper_figures/*
