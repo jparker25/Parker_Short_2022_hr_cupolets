@@ -478,7 +478,6 @@ dt = args.dt;
 plot_percent = args.pp;
 plot_percent_short = args.pps;
 
-
 for fig in args.f:
     if fig == 1:
         figure1(data_direc,save_direc)
@@ -499,8 +498,7 @@ for fig in args.f:
     if fig == 9:
         figure9(data_direc,save_direc,plot_percent,dt)
     if fig == 10:
-        print("Fig 10 not ready.")
-        #figure10(f"{data_direc}/bins_1600_rN_16/cupolets/c11/unique",save_direc)
+        figure10(f"{data_direc}/bins_1600_rN_16/cupolets/c11/unique",save_direc)
     if fig == 11:
         figure11(data_direc,save_direc,dt)
 
